@@ -1,13 +1,21 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
-const routerUsers = require('./routes/users')
+const { PORT = 3000 } = process.env
+
+const app = express()
 
 mongoose.connect('mongodb://localhost:27017/mestodb')
-const app = express()
 app.use(bodyParser.json())
-app.use(routerUsers)
+app.get('/users', (req, res) => {
+  const users = []
+  res.send(users)
+})
 
-app.listen(3000, () => {
+app.post('/users', (req, res) => {
+  res.send(req.body)
+})
+
+app.listen(PORT, () => {
   console.log('Server is running')
 })
