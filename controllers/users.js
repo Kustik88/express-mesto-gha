@@ -32,7 +32,7 @@ const getUserById = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.message === 'NotFound' || err.name === 'CastError') {
-        res.status(NOT_FOUND).send({
+        res.status(404).send({
           message: 'Пользователь c таким id не найден',
         })
         return
