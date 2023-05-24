@@ -22,9 +22,9 @@ const createCard = (req, res) => {
   const { name, link } = req.body
   const owner = req.user
   cardModel.create({ name, link, owner })
-    .orFail(() => {
-      throw new Error('NotFound')
-    })
+    // .orFail(() => {
+    //   throw new Error('NotFound')
+    // })
     .then((newCard) => res.status(CREATED).send(newCard))
     .catch((err) => {
       if (err.message === 'NotFound' || err.name === 'CastError') {
@@ -72,9 +72,6 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
-      throw new Error('NotFound')
-    })
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.message === 'NotFound' || err.name === 'CastError') {
@@ -101,9 +98,6 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
-      throw new Error('NotFound')
-    })
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.message === 'NotFound') {
