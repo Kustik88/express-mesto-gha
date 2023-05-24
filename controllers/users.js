@@ -1,5 +1,6 @@
 const userModel = require('../models/user')
 const {
+  OK,
   CREATED,
   BAD_REQUEST,
   NOT_FOUND,
@@ -8,7 +9,7 @@ const {
 
 const getUsers = (req, res) => {
   userModel.find({})
-    .then((users) => res.send(users))
+    .then((users) => res.status(OK).send(users))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
@@ -29,10 +30,10 @@ const getUserById = (req, res) => {
     .orFail(() => {
       throw new Error('NotFound')
     })
-    .then((user) => res.send(user))
+    .then((user) => res.status(OK).send(user))
     .catch((err) => {
       if (err.message === 'NotFound' || err.name === 'CastError') {
-        res.status(404).send({
+        res.status(BAD_REQUEST).send({
           message: 'Пользователь c таким id не найден',
         })
         return
@@ -77,9 +78,9 @@ const editUserInfo = (req, res) => {
     .orFail(() => {
       throw new Error('NotFound')
     })
-    .then((user) => res.status(CREATED).send(user))
+    .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (err.message === 'NotFound' || err.name === 'CastError') {
         res.status(NOT_FOUND).send({
           message: 'Пользователь c таким id не найден',
         })
@@ -112,9 +113,9 @@ const editUserAvatar = (req, res) => {
     .orFail(() => {
       throw new Error('NotFound')
     })
-    .then((user) => res.status(CREATED).send(user))
+    .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (err.message === 'NotFound' || err.name === 'CastError') {
         res.status(NOT_FOUND).send({
           message: 'Пользователь c таким id не найден',
         })
