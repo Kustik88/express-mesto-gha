@@ -31,7 +31,7 @@ const getUserById = (req, res) => {
     })
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (err.message === 'NotFound' || err.name === 'CastError') {
         res.status(NOT_FOUND).send({
           message: 'Пользователь c таким id не найден',
         })
@@ -86,7 +86,7 @@ const editUserInfo = (req, res) => {
         return
       }
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' })
         return
       }
       res.status(INTERNAL_SERVER_ERROR).send({
@@ -121,7 +121,7 @@ const editUserAvatar = (req, res) => {
         return
       }
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' })
         return
       }
       res.status(INTERNAL_SERVER_ERROR).send({
