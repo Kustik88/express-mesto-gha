@@ -47,15 +47,22 @@ const createCard = (req, res) => {
 }
 
 const deleteCard = (req, res) => {
-  cardModel.findByIdAndRemove(req.params.cardId)
+  cardModel
+    .findByIdAndRemove(req.params.cardId)
     .orFail(() => {
       throw new Error('NotFound')
     })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.message === 'NotFound' || err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({
+      if (err.message === 'NotFound') {
+        res.status(NOT_FOUND).send({
           message: 'Карточка c таким id не найдена',
+        })
+        return
+      }
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({
+          message: 'Введены некорректные данные',
         })
         return
       }
