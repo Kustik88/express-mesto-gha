@@ -7,6 +7,12 @@ const {
   INTERNAL_SERVER_ERROR,
 } = require('../constants/statusCodes')
 
+const createError = (errorName, errorMessage) => {
+  const error = new Error(errorMessage)
+  error.name = errorName
+  throw error
+}
+
 const getCards = (req, res) => {
   cardModel.find({})
     .then((cards) => res.send(cards))
@@ -41,11 +47,11 @@ const deleteCard = (req, res) => {
   cardModel
     .findByIdAndRemove(req.params.cardId)
     .orFail(() => {
-      throw new Error('NotFound')
+      createError('CardNotFoundError', 'Карточка c таким id не найдена')
     })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (err.name === 'CardNotFoundError') {
         res.status(NOT_FOUND).send({
           message: 'Карточка c таким id не найдена',
         })
@@ -73,11 +79,11 @@ const likeCard = (req, res) => {
     },
   )
     .orFail(() => {
-      throw new Error('NotFound')
+      createError('CardNotFoundError', 'Карточка c таким id не найдена')
     })
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (err.name === 'CardNotFoundError') {
         res.status(NOT_FOUND).send({ message: 'Карточка c таким id не найдена' })
         return
       }
@@ -103,11 +109,11 @@ const dislikeCard = (req, res) => {
     },
   )
     .orFail(() => {
-      throw new Error('NotFound')
+      createError('CardNotFoundError', 'Карточка c таким id не найдена')
     })
     .then((card) => res.status(OK).send(card))
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (err.name === 'CardNotFoundError') {
         res.status(NOT_FOUND).send({ message: 'Карточка c таким id не найдена' })
         return
       }

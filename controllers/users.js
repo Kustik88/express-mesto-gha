@@ -24,27 +24,27 @@ const getUserById = (req, res) => {
   userModel
     .findById(userId)
     .orFail(() => {
-      throw new Error('NotFound')
+      const error = new Error('Пользователь c таким id не найден')
+      error.name = 'UserNotFoundError'
+      throw error
     })
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (err.name === 'UserNotFoundError') {
         res.status(NOT_FOUND).send({
-          message: 'Пользователь c таким id не найден',
+          message: `${err.message}`,
         })
-        return
-      }
-      if (err.name === 'CastError') {
+      } else if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({
           message: 'Переданы некорректные данные',
         })
-        return
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Internal Server Error',
+          err: err.message,
+          stack: err.stack,
+        })
       }
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
     })
 }
 
@@ -55,13 +55,13 @@ const createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
-        return
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Internal Server Error',
+          err: err.message,
+          stack: err.stack,
+        })
       }
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
     })
 }
 
@@ -77,29 +77,30 @@ const editUserInfo = (req, res) => {
       },
     )
     .orFail(() => {
-      throw new Error('NotFound')
+      const error = new Error('Пользователь c таким id не найден')
+      error.name = 'UserNotFoundError'
+      throw error
     })
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (err.name === 'userNotFoundError') {
         res.status(NOT_FOUND).send({
           message: 'Пользователь c таким id не найден',
         })
-        return
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(BAD_REQUEST)
+          .send(
+            err.name === 'ValidationError'
+              ? { message: 'Переданы некорректные данные тела запроса' }
+              : { message: 'Переданы некорректные данные в строке запроса' },
+          )
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Internal Server Error',
+          err: err.message,
+          stack: err.stack,
+        })
       }
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные тела запроса' })
-        return
-      }
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные в строке запроса' })
-        return
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
     })
 }
 
@@ -115,29 +116,30 @@ const editUserAvatar = (req, res) => {
       },
     )
     .orFail(() => {
-      throw new Error('NotFound')
+      const error = new Error('Пользователь c таким id не найден')
+      error.name = 'UserNotFoundError'
+      throw error
     })
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (err.name === 'userNotFoundError') {
         res.status(NOT_FOUND).send({
           message: 'Пользователь c таким id не найден',
         })
-        return
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(BAD_REQUEST)
+          .send(
+            err.name === 'ValidationError'
+              ? { message: 'Переданы некорректные данные тела запроса' }
+              : { message: 'Переданы некорректные данные в строке запроса' },
+          )
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Internal Server Error',
+          err: err.message,
+          stack: err.stack,
+        })
       }
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные тела запроса' })
-        return
-      }
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные в строке запроса' })
-        return
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
     })
 }
 
