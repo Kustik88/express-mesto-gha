@@ -6,12 +6,7 @@ const {
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
 } = require('../constants/statusCodes')
-
-const createError = (errorName, errorMessage) => {
-  const error = new Error(errorMessage)
-  error.name = errorName
-  throw error
-}
+const { createError } = require('../helpers/createError')
 
 const getCards = (req, res) => {
   cardModel.find({})
@@ -46,14 +41,12 @@ const createCard = (req, res) => {
 const deleteCard = (req, res) => {
   cardModel
     .findByIdAndRemove(req.params.cardId)
-    .orFail(() => {
-      createError('CardNotFoundError', 'Карточка c таким id не найдена')
-    })
+    .orFail(() => createError('CardNotFoundError', 'Карточка c таким id не найдена'))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CardNotFoundError') {
         res.status(NOT_FOUND).send({
-          message: 'Карточка c таким id не найдена',
+          message: err.message,
         })
         return
       }
@@ -78,13 +71,11 @@ const likeCard = (req, res) => {
       runValidators: true,
     },
   )
-    .orFail(() => {
-      createError('CardNotFoundError', 'Карточка c таким id не найдена')
-    })
+    .orFail(() => createError('CardNotFoundError', 'Карточка c таким id не найдена'))
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.name === 'CardNotFoundError') {
-        res.status(NOT_FOUND).send({ message: 'Карточка c таким id не найдена' })
+        res.status(NOT_FOUND).send({ message: err.message })
         return
       }
       if (err.name === 'CastError') {
@@ -108,13 +99,11 @@ const dislikeCard = (req, res) => {
       runValidators: true,
     },
   )
-    .orFail(() => {
-      createError('CardNotFoundError', 'Карточка c таким id не найдена')
-    })
+    .orFail(() => createError('CardNotFoundError', 'Карточка c таким id не найдена'))
     .then((card) => res.status(OK).send(card))
     .catch((err) => {
       if (err.name === 'CardNotFoundError') {
-        res.status(NOT_FOUND).send({ message: 'Карточка c таким id не найдена' })
+        res.status(NOT_FOUND).send({ message: err.message })
         return
       }
       if (err.name === 'CastError') {

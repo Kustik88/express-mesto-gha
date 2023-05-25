@@ -6,6 +6,7 @@ const {
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
 } = require('../constants/statusCodes')
+const { createError } = require('../helpers/createError')
 
 const getUsers = (req, res) => {
   userModel.find({})
@@ -23,11 +24,7 @@ const getUserById = (req, res) => {
   const { userId } = req.params
   userModel
     .findById(userId)
-    .orFail(() => {
-      const error = new Error('Пользователь c таким id не найден')
-      error.name = 'UserNotFoundError'
-      throw error
-    })
+    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
       if (err.name === 'UserNotFoundError') {
@@ -76,16 +73,12 @@ const editUserInfo = (req, res) => {
         runValidators: true,
       },
     )
-    .orFail(() => {
-      const error = new Error('Пользователь c таким id не найден')
-      error.name = 'UserNotFoundError'
-      throw error
-    })
+    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
       if (err.name === 'userNotFoundError') {
         res.status(NOT_FOUND).send({
-          message: 'Пользователь c таким id не найден',
+          message: err.message,
         })
       } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(BAD_REQUEST)
@@ -115,16 +108,12 @@ const editUserAvatar = (req, res) => {
         runValidators: true,
       },
     )
-    .orFail(() => {
-      const error = new Error('Пользователь c таким id не найден')
-      error.name = 'UserNotFoundError'
-      throw error
-    })
+    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
       if (err.name === 'userNotFoundError') {
         res.status(NOT_FOUND).send({
-          message: 'Пользователь c таким id не найден',
+          message: err.message,
         })
       } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(BAD_REQUEST)
