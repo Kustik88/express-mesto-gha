@@ -25,12 +25,6 @@ const createCard = (req, res) => {
   cardModel.create({ name, link, owner })
     .then((newCard) => res.status(CREATED).send(newCard))
     .catch((err) => {
-      // if (err.name === 'CastError') {
-      //   res.status(BAD_REQUEST).send({
-      //     message: 'Пользователь c таким id не найден',
-      //   })
-      //   return
-      // }
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
         return
@@ -88,7 +82,7 @@ const likeCard = (req, res) => {
         return
       }
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Введены неккоректные данные' })
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные в строке запроса' })
         return
       }
       res.status(INTERNAL_SERVER_ERROR).send({
