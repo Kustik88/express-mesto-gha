@@ -23,17 +23,14 @@ const createCard = (req, res) => {
   const { name, link } = req.body
   const owner = req.user._id
   cardModel.create({ name, link, owner })
-    // .orFail(() => {
-    //   throw new Error('NotFound')
-    // })
     .then((newCard) => res.status(CREATED).send(newCard))
     .catch((err) => {
-      if (err.message === 'NotFound' || err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({
-          message: 'Пользователь c таким id не найден',
-        })
-        return
-      }
+      // if (err.name === 'CastError') {
+      //   res.status(BAD_REQUEST).send({
+      //     message: 'Пользователь c таким id не найден',
+      //   })
+      //   return
+      // }
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
         return
@@ -61,9 +58,7 @@ const deleteCard = (req, res) => {
         return
       }
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({
-          message: 'Введены некорректные данные',
-        })
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные в строке запроса' })
         return
       }
       res.status(INTERNAL_SERVER_ERROR).send({
@@ -89,9 +84,7 @@ const likeCard = (req, res) => {
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.message === 'NotFound') {
-        res.status(NOT_FOUND).send({
-          message: 'Карточка c таким id не найдена',
-        })
+        res.status(NOT_FOUND).send({ message: 'Карточка c таким id не найдена' })
         return
       }
       if (err.name === 'CastError') {
@@ -121,9 +114,7 @@ const dislikeCard = (req, res) => {
     .then((card) => res.status(OK).send(card))
     .catch((err) => {
       if (err.message === 'NotFound') {
-        res.status(NOT_FOUND).send({
-          message: 'Карточка c таким id не найдена',
-        })
+        res.status(NOT_FOUND).send({ message: 'Карточка c таким id не найдена' })
         return
       }
       if (err.name === 'CastError') {
