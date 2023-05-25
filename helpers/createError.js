@@ -4,4 +4,6 @@ const createError = (errorName, errorMessage) => {
   throw error
 }
 
-module.exports = createError
+module.exports = {
+  createError,
+}
