@@ -1,5 +1,6 @@
 const cardModel = require('../models/card')
 const {
+  OK,
   CREATED,
   BAD_REQUEST,
   NOT_FOUND,
@@ -20,7 +21,7 @@ const getCards = (req, res) => {
 
 const createCard = (req, res) => {
   const { name, link } = req.body
-  const owner = req.user
+  const owner = req.user._id
   cardModel.create({ name, link, owner })
     // .orFail(() => {
     //   throw new Error('NotFound')
@@ -70,18 +71,24 @@ const likeCard = (req, res) => {
   cardModel.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true },
+    {
+      new: true,
+      runValidators: true,
+    },
   )
+    .orFail(() => {
+      throw new Error('NotFound')
+    })
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
-      if (err.message === 'NotFound' || err.name === 'CastError') {
+      if (err.message === 'NotFound') {
         res.status(NOT_FOUND).send({
-          message: 'Пользователь c таким id не найден',
+          message: 'Карточка c таким id не найдена',
         })
         return
       }
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Введены неккоректные данные' })
         return
       }
       res.status(INTERNAL_SERVER_ERROR).send({
@@ -96,18 +103,24 @@ const dislikeCard = (req, res) => {
   cardModel.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true },
+    {
+      new: true,
+      runValidators: true,
+    },
   )
-    .then((card) => res.status(CREATED).send(card))
+    .orFail(() => {
+      throw new Error('NotFound')
+    })
+    .then((card) => res.status(OK).send(card))
     .catch((err) => {
       if (err.message === 'NotFound') {
         res.status(NOT_FOUND).send({
-          message: 'Пользователь c таким id не найден',
+          message: 'Карточка c таким id не найдена',
         })
         return
       }
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Введены неккоректные данные' })
         return
       }
       res.status(INTERNAL_SERVER_ERROR).send({
