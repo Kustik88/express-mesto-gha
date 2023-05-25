@@ -84,7 +84,7 @@ const editUserInfo = (req, res) => {
         res.status(BAD_REQUEST)
           .send(
             err.name === 'ValidationError'
-              ? { message: 'Переданы некорректные данные тела запроса' }
+              ? { message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` }
               : { message: 'Переданы некорректные данные в строке запроса' },
           )
       } else {
@@ -119,7 +119,7 @@ const editUserAvatar = (req, res) => {
         res.status(BAD_REQUEST)
           .send(
             err.name === 'ValidationError'
-              ? { message: 'Переданы некорректные данные тела запроса' }
+              ? { message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` }
               : { message: 'Переданы некорректные данные в строке запроса' },
           )
       } else {
