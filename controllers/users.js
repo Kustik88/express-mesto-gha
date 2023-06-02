@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs')
 const userModel = require('../models/user')
 const {
   OK,
@@ -46,19 +47,33 @@ const getUserById = (req, res) => {
 }
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body
-  userModel.create({ name, about, avatar })
-    .then((newUser) => res.status(CREATED).send(newUser))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Internal Server Error',
-          err: err.message,
-          stack: err.stack,
+  const {
+    name, about, avatar, email, password,
+  } = req.body
+  bcrypt.hash(password, 10)
+    .then((hash) => {
+      userModel.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      })
+        .then((newUser) => res.status(CREATED).send({
+          _id: newUser._id,
+          email: newUser.email,
+        }))
+        .catch((err) => {
+          if (err.name === 'ValidationError') {
+            res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
+          } else {
+            res.status(INTERNAL_SERVER_ERROR).send({
+              message: 'Internal Server Error',
+              err: err.message,
+              stack: err.stack,
+            })
+          }
         })
-      }
     })
 }
 
