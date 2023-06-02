@@ -147,10 +147,32 @@ const editUserAvatar = (req, res) => {
     })
 }
 
+const loginUser = (req, res) => {
+  const { email, password } = req.body
+  userModel.findOne({ email })
+    .orFail(() => createError('emailNotFoundError', 'Неправильные почта или пароль'))
+    .then((user) => bcrypt.compare(password, user.password)
+      // eslint-disable-next-line consistent-return
+      .then((matched) => {
+        if (!matched) {
+          return createError('emailNotFoundError', 'Неправильные почта или пароль')
+        }
+        res.send({ message: 'Всё верно!' })
+      }))
+    .catch((err) => {
+      res.status(INTERNAL_SERVER_ERROR).send({
+        message: 'Internal Server Error',
+        err: err.message,
+        stack: err.stack,
+      })
+    })
+}
+
 module.exports = {
   getUsers,
   getUserById,
   createUser,
   editUserInfo,
   editUserAvatar,
+  loginUser,
 }
