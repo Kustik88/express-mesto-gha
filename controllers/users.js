@@ -47,6 +47,31 @@ const getUserById = (req, res) => {
     })
 }
 
+const getCurrentUser = (req, res) => {
+  const { userId } = req.user._id
+  userModel
+    .findById(userId)
+    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
+    .then((user) => res.status(OK).send(user))
+    .catch((err) => {
+      if (err.name === 'UserNotFoundError') {
+        res.status(NOT_FOUND).send({
+          message: `${err.message}`,
+        })
+      } else if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({
+          message: 'Переданы некорректные данные',
+        })
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Internal Server Error',
+          err: err.message,
+          stack: err.stack,
+        })
+      }
+    })
+}
+
 const createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
@@ -170,6 +195,7 @@ const loginUser = (req, res) => {
 
 module.exports = {
   getUsers,
+  getCurrentUser,
   getUserById,
   createUser,
   editUserInfo,

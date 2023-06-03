@@ -10,14 +10,6 @@ const app = express()
 app.use(bodyParser.json())
 app.use(helmet())
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '646cfe1a939835021a970a0c',
-  }
-
-  next()
-})
-
 app.use(routerUsers)
 app.use(routerCards)
 

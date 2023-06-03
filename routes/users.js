@@ -9,7 +9,7 @@ router.use(auth)
 
 router.get('/users', userControllers.getUsers)
 router.get('/users/:userId', userControllers.getUserById)
-router.get('/users/me', userControllers.editUserInfo)
+router.get('/users/me', userControllers.getCurrentUser)
 router.patch('/users/me', userControllers.editUserInfo)
 router.patch('/users/me/avatar', userControllers.editUserAvatar)
 
