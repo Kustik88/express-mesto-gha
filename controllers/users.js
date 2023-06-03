@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const userModel = require('../models/user')
 const {
   OK,
@@ -151,7 +152,12 @@ const loginUser = (req, res) => {
   const { email, password } = req.body
   return userModel.findUserByCredentials(email, password)
     .then((user) => {
-      res.status(OK).send(user)
+      const token = jwt.sign(
+        { _id: user._id },
+        'long-key-word',
+        { expiresIn: '7d' },
+      )
+      res.send({ token })
     })
     .catch((err) => {
       res.status(INTERNAL_SERVER_ERROR).send({
