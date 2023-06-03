@@ -149,16 +149,10 @@ const editUserAvatar = (req, res) => {
 
 const loginUser = (req, res) => {
   const { email, password } = req.body
-  userModel.findOne({ email })
-    .orFail(() => createError('emailNotFoundError', 'Неправильные почта или пароль'))
-    .then((user) => bcrypt.compare(password, user.password)
-      // eslint-disable-next-line consistent-return
-      .then((matched) => {
-        if (!matched) {
-          return createError('emailNotFoundError', 'Неправильные почта или пароль')
-        }
-        res.send({ message: 'Всё верно!' })
-      }))
+  return userModel.findUserByCredentials(email, password)
+    .then((user) => {
+      res.status(OK).send(user)
+    })
     .catch((err) => {
       res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Internal Server Error',

@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const bcrypt = require('bcryptjs')
+const { createError } = require('../helpers/createError')
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -39,5 +41,17 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Поле "password" должно быть заполнено'],
   },
 }, { versionKey: false })
+
+userSchema.statics.findUserByCredentials = function (email, password) {
+  return this.findOne({ email })
+    .orFail(() => createError('emailNotFoundError', 'Неправильные почта или пароль'))
+    .then((user) => bcrypt.compare(password, user.password)
+      .then((matched) => {
+        if (!matched) {
+          return createError('emailNotFoundError', 'Неправильные почта или пароль')
+        }
+        return user
+      }))
+}
 
 module.exports = mongoose.model('user', userSchema)
