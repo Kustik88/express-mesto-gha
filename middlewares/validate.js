@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 const { celebrate, Joi } = require('celebrate')
 
 const validateUserBody = celebrate({
@@ -17,7 +18,8 @@ const validateUserBody = celebrate({
     avatar: Joi
       .string()
       .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png')
-      .required(),
+      .required()
+      .pattern(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
     email: Joi
       .string()
       .required()
