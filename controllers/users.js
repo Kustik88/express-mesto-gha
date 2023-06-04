@@ -10,6 +10,7 @@ const {
 } = require('../constants/statusCodes')
 
 const ExistingEmailError = require('../errors/ExistingEmailError')
+const BadRequestError = require('../errors/BadRequestError')
 const NotFoundError = require('../errors/NotFoundError')
 const ForbiddenError = require('../errors/ForBiddenError')
 const UnauthorizedError = require('../errors/UnauthorizedError')
@@ -85,6 +86,9 @@ const createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body
+  if (!password) {
+    throw new BadRequestError('Поле "password" является обязательным')
+  }
   bcrypt.hash(password, 10)
     .then((hash) => {
       userModel.create({
@@ -97,6 +101,8 @@ const createUser = (req, res) => {
         .then((newUser) => res.status(CREATED).send({
           _id: newUser._id,
           email: newUser.email,
+          about: newUser.about,
+          avatar: newUser.avatar,
         }))
         .catch((err) => {
           if (err.name === 'ValidationError') {
@@ -113,6 +119,10 @@ const createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
+      } else if (err.name === 'BadRequestError') {
+        res.status(err.statusCode).send({
+          message: err.message,
+        })
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Internal Server Error',
@@ -209,11 +219,17 @@ const loginUser = (req, res) => {
       res.send({ token })
     })
     .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
+      if (err.statusCode === 401) {
+        res.status(err.statusCode).send({
+          message: err.message,
+        })
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Internal Server Error',
+          err: err.message,
+          stack: err.stack,
+        })
+      }
     })
 }
 
