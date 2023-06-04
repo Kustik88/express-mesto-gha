@@ -101,6 +101,17 @@ const createUser = (req, res) => {
           }
         })
     })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'Internal Server Error',
+          err: err.message,
+          stack: err.stack,
+        })
+      }
+    })
 }
 
 const editUserInfo = (req, res) => {
