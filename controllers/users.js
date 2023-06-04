@@ -82,12 +82,13 @@ const getCurrentUser = (req, res) => {
     })
 }
 
-const createUser = (req, res) => {
+// eslint-disable-next-line consistent-return
+const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body
   if (!password) {
-    throw new BadRequestError('Поле "password" является обязательным')
+    return next(new BadRequestError('Поле "password" является обязательным'))
   }
   bcrypt.hash(password, 10)
     .then((hash) => {
@@ -104,33 +105,9 @@ const createUser = (req, res) => {
           about: newUser.about,
           avatar: newUser.avatar,
         }))
-        .catch((err) => {
-          if (err.name === 'ValidationError') {
-            res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
-          } else {
-            res.status(INTERNAL_SERVER_ERROR).send({
-              message: 'Internal Server Error',
-              err: err.message,
-              stack: err.stack,
-            })
-          }
-        })
+        .catch(next)
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
-      } else if (err.name === 'BadRequestError') {
-        res.status(err.statusCode).send({
-          message: err.message,
-        })
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Internal Server Error',
-          err: err.message,
-          stack: err.stack,
-        })
-      }
-    })
+    .catch(next)
 }
 
 const editUserInfo = (req, res) => {
