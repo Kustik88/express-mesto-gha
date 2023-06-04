@@ -17,9 +17,7 @@ const validateCardBody = celebrate({
     owner: Joi.object().required().keys({
       _id: Joi.string,
     }),
-    likes: Joi.array([
-      Joi.string(),
-    ]),
+    likes: Joi.string(),
   }),
 })
 
