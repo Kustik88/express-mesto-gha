@@ -10,10 +10,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
 const app = express()
 app.use(bodyParser.json())
 app.use(helmet())
-
+app.use(errorHandler)
 app.use(routerUsers)
 app.use(routerCards)
-app.use(errorHandler)
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемая страница не найдена' })

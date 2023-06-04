@@ -4,10 +4,10 @@ const {
   CREATED,
 } = require('../constants/statusCodes')
 // const { createError } = require('../middlewares/createError')
-const ExistingEmailError = require('../errors/ExistingEmailError')
+// const ExistingEmailError = require('../errors/ExistingEmailError')
 const NotFoundError = require('../errors/NotFoundError')
-const ForbiddenError = require('../errors/ForbiddenError')
-const UnauthorizedError = require('../errors/UnauthorizedError')
+// const ForbiddenError = require('../errors/ForbiddenError')
+// const UnauthorizedError = require('../errors/UnauthorizedError')
 
 const getCards = (req, res, next) => {
   cardModel.find({})
@@ -58,7 +58,7 @@ const dislikeCard = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(() =>{
+    .orFail(() => {
       throw new NotFoundError('карточка c таким id не найден')
     })
     .then((card) => res.status(OK).send(card))

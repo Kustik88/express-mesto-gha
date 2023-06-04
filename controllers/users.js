@@ -6,10 +6,10 @@ const {
   CREATED,
 } = require('../constants/statusCodes')
 // const { createError } = require('../middlewares/createError')
-const ExistingEmailError = require('../errors/ExistingEmailError')
+// const ExistingEmailError = require('../errors/ExistingEmailError')
 const NotFoundError = require('../errors/NotFoundError')
-const ForbiddenError = require('../errors/ForbiddenError')
-const UnauthorizedError = require('../errors/UnauthorizedError')
+// const ForbiddenError = require('../errors/ForbiddenError')
+// const UnauthorizedError = require('../errors/UnauthorizedError')
 
 const getUsers = (req, res, next) => {
   userModel.find({})

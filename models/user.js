@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
-const { createError } = require('../middlewares/createError')
+// const { createError } = require('../middlewares/createError')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -45,11 +46,13 @@ const userSchema = new mongoose.Schema({
 
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
-    .orFail(() => createError('UnauthorizedError', 'Неправильные почта или пароль'))
+    .orFail(() => {
+      throw new UnauthorizedError('Неправильные почта или пароль')
+    })
     .then((user) => bcrypt.compare(password, user.password)
       .then((matched) => {
         if (!matched) {
-          return createError('UnauthorizedError', 'Неправильные почта или пароль')
+          return new UnauthorizedError('Неправильные почта или пароль')
         }
         return user
       }))
