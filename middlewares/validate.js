@@ -2,11 +2,29 @@ const { celebrate, Joi } = require('celebrate')
 
 const validateUserBody = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required(),
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
+    name: Joi
+      .string()
+      .default('Жак-Ив Кусто')
+      .required()
+      .min(2)
+      .max(30),
+    about: Joi
+      .string()
+      .default('Исследователь')
+      .required()
+      .min(2)
+      .max(30),
+    avatar: Joi
+      .string()
+      .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png')
+      .required(),
+    email: Joi
+      .string()
+      .required()
+      .email(),
+    password: Joi
+      .string()
+      .required(),
   }),
 })
 
