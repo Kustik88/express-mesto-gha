@@ -1,6 +1,9 @@
 const router = require('express').Router()
 const auth = require('../middlewares/auth')
 const userControllers = require('../controllers/users')
+const { validateUserBody } = require('../middlewares/validate')
+
+router.use(validateUserBody)
 
 router.post('/signup', userControllers.createUser)
 router.post('/signin', userControllers.loginUser)
