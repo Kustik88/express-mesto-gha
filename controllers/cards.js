@@ -3,7 +3,11 @@ const {
   OK,
   CREATED,
 } = require('../constants/statusCodes')
-const { createError } = require('../middlewares/createError')
+// const { createError } = require('../middlewares/createError')
+const ExistingEmailError = require('../errors/ExistingEmailError')
+const NotFoundError = require('../errors/NotFoundError')
+const ForbiddenError = require('../errors/ForbiddenError')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 const getCards = (req, res, next) => {
   cardModel.find({})
@@ -22,7 +26,9 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   cardModel
     .findByIdAndRemove(req.params.cardId)
-    .orFail(() => createError('CardNotFoundError', 'Карточка c таким id не найдена'))
+    .orFail(() => {
+      throw new NotFoundError('карточка c таким id не найден')
+    })
     .then((card) => res.send(card))
     .catch(next)
 }
@@ -36,7 +42,9 @@ const likeCard = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(() => createError('CardNotFoundError', 'Карточка c таким id не найдена'))
+    .orFail(() => {
+      throw new NotFoundError('карточка c таким id не найден')
+    })
     .then((card) => res.status(CREATED).send(card))
     .catch(next)
 }
@@ -50,7 +58,9 @@ const dislikeCard = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(() => createError('CardNotFoundError', 'Карточка c таким id не найдена'))
+    .orFail(() =>{
+      throw new NotFoundError('карточка c таким id не найден')
+    })
     .then((card) => res.status(OK).send(card))
     .catch(next)
 }

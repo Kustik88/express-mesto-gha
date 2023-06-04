@@ -5,7 +5,11 @@ const {
   OK,
   CREATED,
 } = require('../constants/statusCodes')
-const { createError } = require('../middlewares/createError')
+// const { createError } = require('../middlewares/createError')
+const ExistingEmailError = require('../errors/ExistingEmailError')
+const NotFoundError = require('../errors/NotFoundError')
+const ForbiddenError = require('../errors/ForbiddenError')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 const getUsers = (req, res, next) => {
   userModel.find({})
@@ -17,7 +21,9 @@ const getUserById = (req, res, next) => {
   const { userId } = req.params
   userModel
     .findById(userId)
-    .orFail(() => createError('NotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => {
+      throw new NotFoundError('Пользователь c таким id не найден')
+    })
     .then((user) => res.status(OK).send(user))
     .catchcatch(next)
 }
@@ -26,7 +32,9 @@ const getCurrentUser = (req, res, next) => {
   const { userId } = req.user._id
   userModel
     .findById(userId)
-    .orFail(() => createError('NotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => {
+      throw new NotFoundError('Пользователь c таким id не найден')
+    })
     .then((user) => res.status(OK).send(user))
     .catch(next)
 }
@@ -63,7 +71,9 @@ const editUserInfo = (req, res, next) => {
         runValidators: true,
       },
     )
-    .orFail(() => createError('NotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => {
+      throw new NotFoundError('Пользователь c таким id не найден')
+    })
     .then((user) => res.status(OK).send(user))
     .catch(next)
 }
@@ -79,7 +89,9 @@ const editUserAvatar = (req, res, next) => {
         runValidators: true,
       },
     )
-    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => {
+      throw new NotFoundError('Пользователь c таким id не найден')
+    })
     .then((user) => res.status(OK).send(user))
     .catch(next)
 }
