@@ -4,75 +4,34 @@ const userModel = require('../models/user')
 const {
   OK,
   CREATED,
-  BAD_REQUEST,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
 } = require('../constants/statusCodes')
-const { createError } = require('../helpers/createError')
+const { createError } = require('../middlewares/createError')
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   userModel.find({})
     .then((users) => res.status(OK).send(users))
-    .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
-    })
+    .catch(next)
 }
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const { userId } = req.params
   userModel
     .findById(userId)
-    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => createError('NotFoundError', 'Пользователь c таким id не найден'))
     .then((user) => res.status(OK).send(user))
-    .catch((err) => {
-      if (err.name === 'UserNotFoundError') {
-        res.status(NOT_FOUND).send({
-          message: `${err.message}`,
-        })
-      } else if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({
-          message: 'Переданы некорректные данные',
-        })
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Internal Server Error',
-          err: err.message,
-          stack: err.stack,
-        })
-      }
-    })
+    .catchcatch(next)
 }
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const { userId } = req.user._id
   userModel
     .findById(userId)
-    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => createError('NotFoundError', 'Пользователь c таким id не найден'))
     .then((user) => res.status(OK).send(user))
-    .catch((err) => {
-      if (err.name === 'UserNotFoundError') {
-        res.status(NOT_FOUND).send({
-          message: `${err.message}`,
-        })
-      } else if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({
-          message: 'Переданы некорректные данные',
-        })
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Internal Server Error',
-          err: err.message,
-          stack: err.stack,
-        })
-      }
-    })
+    .catch(next)
 }
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body
@@ -89,21 +48,11 @@ const createUser = (req, res) => {
           _id: newUser._id,
           email: newUser.email,
         }))
-        .catch((err) => {
-          if (err.name === 'ValidationError') {
-            res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
-          } else {
-            res.status(INTERNAL_SERVER_ERROR).send({
-              message: 'Internal Server Error',
-              err: err.message,
-              stack: err.stack,
-            })
-          }
-        })
+        .catch(next)
     })
 }
 
-const editUserInfo = (req, res) => {
+const editUserInfo = (req, res, next) => {
   const { name, about } = req.body
   userModel
     .findByIdAndUpdate(
@@ -114,31 +63,12 @@ const editUserInfo = (req, res) => {
         runValidators: true,
       },
     )
-    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => createError('NotFoundError', 'Пользователь c таким id не найден'))
     .then((user) => res.status(OK).send(user))
-    .catch((err) => {
-      if (err.name === 'userNotFoundError') {
-        res.status(NOT_FOUND).send({
-          message: err.message,
-        })
-      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(BAD_REQUEST)
-          .send(
-            err.name === 'ValidationError'
-              ? { message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` }
-              : { message: 'Переданы некорректные данные в строке запроса' },
-          )
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Internal Server Error',
-          err: err.message,
-          stack: err.stack,
-        })
-      }
-    })
+    .catch(next)
 }
 
-const editUserAvatar = (req, res) => {
+const editUserAvatar = (req, res, next) => {
   const { avatar } = req.body
   userModel
     .findByIdAndUpdate(
@@ -151,29 +81,10 @@ const editUserAvatar = (req, res) => {
     )
     .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
     .then((user) => res.status(OK).send(user))
-    .catch((err) => {
-      if (err.name === 'userNotFoundError') {
-        res.status(NOT_FOUND).send({
-          message: err.message,
-        })
-      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(BAD_REQUEST)
-          .send(
-            err.name === 'ValidationError'
-              ? { message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` }
-              : { message: 'Переданы некорректные данные в строке запроса' },
-          )
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Internal Server Error',
-          err: err.message,
-          stack: err.stack,
-        })
-      }
-    })
+    .catch(next)
 }
 
-const loginUser = (req, res) => {
+const loginUser = (req, res, next) => {
   const { email, password } = req.body
   return userModel.findUserByCredentials(email, password)
     .then((user) => {
@@ -184,13 +95,7 @@ const loginUser = (req, res) => {
       )
       res.send({ token })
     })
-    .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
-    })
+    .catch(next)
 }
 
 module.exports = {

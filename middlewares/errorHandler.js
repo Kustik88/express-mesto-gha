@@ -1,17 +1,26 @@
+const {
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+} = require('../constants/statusCodes')
+
 const errorHandler = (err, req, res, next) => {
-  if (err.name === 'UserNotFoundError') {
-    res.status(NOT_FOUND).send({
-      message: `${err.message}`,
+  const {
+    name,
+    statusCode = name === ('CastError' || 'ValidationError')
+      ? BAD_REQUEST
+      : INTERNAL_SERVER_ERROR,
+    message,
+    stack,
+  } = err
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === INTERNAL_SERVER_ERROR
+        ? 'Ошибка сервера'
+        : message,
+      stack,
     })
-  } else if (err.name === 'CastError') {
-    res.status(BAD_REQUEST).send({
-      message: 'Переданы некорректные данные',
-    })
-  } else {
-    res.status(INTERNAL_SERVER_ERROR).send({
-      message: 'Internal Server Error',
-      err: err.message,
-      stack: err.stack,
-    })
-  }
+  next()
 }
+
+module.exports = errorHandler

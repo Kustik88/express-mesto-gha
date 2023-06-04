@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const helmet = require('helmet')
 const routerUsers = require('./routes/users')
 const routerCards = require('./routes/cards')
+const errorHandler = require('./middlewares/errorHandler')
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
 const app = express()
@@ -12,6 +13,7 @@ app.use(helmet())
 
 app.use(routerUsers)
 app.use(routerCards)
+app.use(errorHandler)
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемая страница не найдена' })
