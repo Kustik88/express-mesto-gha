@@ -6,63 +6,37 @@ const {
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
 } = require('../constants/statusCodes')
+
+const ExistingEmailError = require('../errors/ExistingEmailError')
+const BadRequestError = require('../errors/BadRequestError')
+const NotFoundError = require('../errors/NotFoundError')
+const ForbiddenError = require('../errors/ForBiddenError')
+const UnauthorizedError = require('../errors/UnauthorizedError')
 const { createError } = require('../helpers/createError')
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   cardModel.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
-    })
+    .catch(next)
 }
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body
   const owner = req.user._id
   cardModel.create({ name, link, owner })
     .then((newCard) => res.status(CREATED).send(newCard))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: `${Object.values(err.errors).map((e) => e.message).join(' ')}` })
-        return
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
-    })
+    .catch(next)
 }
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   cardModel
     .findByIdAndRemove(req.params.cardId)
-    .orFail(() => createError('CardNotFoundError', 'Карточка c таким id не найдена'))
+    .orFail(() => { throw new NotFoundError('Карточка c таким id не найден') })
     .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'CardNotFoundError') {
-        res.status(NOT_FOUND).send({
-          message: err.message,
-        })
-        return
-      }
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные в строке запроса' })
-        return
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
-    })
+    .catch(next)
 }
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   cardModel.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -71,26 +45,12 @@ const likeCard = (req, res) => {
       runValidators: true,
     },
   )
-    .orFail(() => createError('CardNotFoundError', 'Карточка c таким id не найдена'))
+    .orFail(() => { throw new NotFoundError('Карточка c таким id не найден') })
     .then((card) => res.status(CREATED).send(card))
-    .catch((err) => {
-      if (err.name === 'CardNotFoundError') {
-        res.status(NOT_FOUND).send({ message: err.message })
-        return
-      }
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные в строке запроса' })
-        return
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
-    })
+    .catch(next)
 }
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   cardModel.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -99,23 +59,9 @@ const dislikeCard = (req, res) => {
       runValidators: true,
     },
   )
-    .orFail(() => createError('CardNotFoundError', 'Карточка c таким id не найдена'))
+    .orFail(() => { throw new NotFoundError('Карточка c таким id не найден') })
     .then((card) => res.status(OK).send(card))
-    .catch((err) => {
-      if (err.name === 'CardNotFoundError') {
-        res.status(NOT_FOUND).send({ message: err.message })
-        return
-      }
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные в строке запроса' })
-        return
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      })
-    })
+    .catch(next)
 }
 
 module.exports = {
