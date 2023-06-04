@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+// const mongoose = require('mongoose')
 
 // eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
@@ -8,7 +9,7 @@ const auth = (req, res, next) => {
       .status(401)
       .send({ message: 'Необходима авторизация' })
   }
-  const token = authorization.replace('Bearer ')
+  const token = authorization.replace('Bearer ', '')
   let payload
   try {
     payload = jwt.verify(token, 'long-key-word')
@@ -17,7 +18,7 @@ const auth = (req, res, next) => {
       .status(401)
       .send({ message: 'Необходима авторизация' })
   }
-  res.user = payload
+  req.user = payload
   next()
 }
 

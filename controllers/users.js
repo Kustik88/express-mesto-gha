@@ -8,7 +8,12 @@ const {
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
 } = require('../constants/statusCodes')
-const { createError } = require('../helpers/createError')
+
+const ExistingEmailError = require('../errors/ExistingEmailError')
+const NotFoundError = require('../errors/NotFoundError')
+const ForbiddenError = require('../errors/ForBiddenError')
+const UnauthorizedError = require('../errors/UnauthorizedError')
+// const { createError } = require('../helpers/createError')
 
 const getUsers = (req, res) => {
   userModel.find({})
@@ -26,10 +31,12 @@ const getUserById = (req, res) => {
   const { userId } = req.params
   userModel
     .findById(userId)
-    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => {
+      throw new NotFoundError('Пользователь c таким id не найден')
+    })
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.name === 'UserNotFoundError') {
+      if (err.name === 'NotFoundError') {
         res.status(NOT_FOUND).send({
           message: `${err.message}`,
         })
@@ -51,10 +58,12 @@ const getCurrentUser = (req, res) => {
   const { userId } = req.user._id
   userModel
     .findById(userId)
-    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => {
+      throw new NotFoundError('Пользователь c таким id не найден')
+    })
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.name === 'UserNotFoundError') {
+      if (err.name === 'NotFoundError') {
         res.status(NOT_FOUND).send({
           message: `${err.message}`,
         })
@@ -125,10 +134,12 @@ const editUserInfo = (req, res) => {
         runValidators: true,
       },
     )
-    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => {
+      throw new NotFoundError('Пользователь c таким id не найден')
+    })
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.name === 'userNotFoundError') {
+      if (err.name === 'NotFoundError') {
         res.status(NOT_FOUND).send({
           message: err.message,
         })
@@ -160,10 +171,12 @@ const editUserAvatar = (req, res) => {
         runValidators: true,
       },
     )
-    .orFail(() => createError('UserNotFoundError', 'Пользователь c таким id не найден'))
+    .orFail(() => {
+      throw new NotFoundError('Пользователь c таким id не найден')
+    })
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err.name === 'userNotFoundError') {
+      if (err.name === 'NotFoundError') {
         res.status(NOT_FOUND).send({
           message: err.message,
         })
