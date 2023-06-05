@@ -13,7 +13,7 @@ const validateUserParams = celebrate({
 })
 
 const validateUserBody = celebrate({
-  body: Joi.object().keys({
+  body: Joi.object({
     name: Joi
       .string()
       .default('Жак-Ив Кусто')
@@ -34,13 +34,13 @@ const validateUserBody = celebrate({
       .alter({
         post: (body) => body.required(),
       })
-      .tailor('post'),
+      .tailor(['post']),
     password: Joi
       .string()
       .alter({
         post: (body) => body.required(),
       })
-      .tailor('post'),
+      .tailor(['post']),
   }),
 })
 
