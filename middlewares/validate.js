@@ -7,7 +7,7 @@ const validateUserParams = celebrate({
       .string()
       .min(20)
       .max(24)
-      .pattern(/[a-z0-9]/),
+      .regex(/[a-z0-9]/),
   }),
 })
 
@@ -26,7 +26,7 @@ const validateUserBody = celebrate({
     avatar: Joi
       .string()
       .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png')
-      .pattern(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
+      .regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
     email: Joi
       .string()
       .required()
