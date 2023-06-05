@@ -32,13 +32,15 @@ const validateUserBody = celebrate({
       .string()
       .email()
       .alter({
-        post: (email) => email.required(),
-      }),
+        post: (body) => body.required(),
+      })
+      .tailor('post'),
     password: Joi
       .string()
       .alter({
-        post: (password) => password.required(),
-      }),
+        post: (body) => body.required(),
+      })
+      .tailor('post'),
   }),
 })
 
