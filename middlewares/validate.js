@@ -2,10 +2,10 @@
 const { celebrate, Joi } = require('celebrate')
 
 const validateUserParams = celebrate({
-  params: Joi.object().keys({
+  params: Joi.object().unknown().keys({
     userId: Joi
       .string()
-      .min(20)
+      .min(2)
       .max(24)
       .pattern(/[a-z0-9]/),
   }),
@@ -27,6 +27,11 @@ const validateUserBody = celebrate({
       .string()
       .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png')
       .pattern(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
+  }),
+})
+
+const validateUserBodyForAuth = celebrate({
+  body: Joi.object().keys({
     email: Joi
       .string()
       .required()
@@ -50,6 +55,7 @@ const validateCardBody = celebrate({
 
 module.exports = {
   validateUserParams,
+  validateUserBodyForAuth,
   validateUserBody,
   validateCardBody,
 }
