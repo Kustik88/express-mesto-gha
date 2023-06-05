@@ -68,7 +68,12 @@ const createUser = (req, res, next) => {
           about: newUser.about,
           avatar: newUser.avatar,
         }))
-        .catch(next)
+        .catch((err) => {
+          if (err.code === 11000) {
+            next(new ExistingEmailError('Такой пользователь уже существует'))
+          }
+          next(err)
+        })
     })
     .catch(next)
 }

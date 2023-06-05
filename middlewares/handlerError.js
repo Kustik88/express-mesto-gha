@@ -1,5 +1,4 @@
 const handlerError = (err, req, res, next) => {
-  console.log(err.name)
   const {
     name,
     statusCode = (name === 'CastError' || name === 'ValidationError')
@@ -8,6 +7,7 @@ const handlerError = (err, req, res, next) => {
     message,
     stack,
   } = err
+
   res
     .status(statusCode)
     .send({
