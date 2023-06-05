@@ -29,19 +29,26 @@ const validateUserBody = celebrate({
       .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png')
       .regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
     email: Joi
-      .string()
-      .email()
-      .alter({
-        post: (body) => body.required(),
-      })
-      .tailor(['post']),
+      .when('method', {
+        is: 'post',
+        then: Joi
+          .string()
+          .email()
+          .required(),
+        otherwise: Joi
+          .string()
+          .email(),
+      }),
     password: Joi
-      .string()
-      .alter({
-        post: (body) => body.required(),
-      })
-      .tailor(['post']),
-  }),
+      .when('method', {
+        is: 'post',
+        then: Joi
+          .string()
+          .required(),
+        otherwise: Joi
+          .string(),
+      }),
+  }).unknown(true),
 })
 
 const validateCardBody = celebrate({
