@@ -1,6 +1,16 @@
 /* eslint-disable no-useless-escape */
 const { celebrate, Joi } = require('celebrate')
 
+const validateUserParams = celebrate({
+  params: Joi.object().keys({
+    userId: Joi
+      .string()
+      .min(20)
+      .max(24)
+      .pattern(/[a-z0-9]/),
+  }),
+})
+
 const validateUserBody = celebrate({
   body: Joi.object().keys({
     name: Joi
@@ -39,6 +49,7 @@ const validateCardBody = celebrate({
 })
 
 module.exports = {
+  validateUserParams,
   validateUserBody,
   validateCardBody,
 }
