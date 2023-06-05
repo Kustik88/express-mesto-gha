@@ -5,6 +5,7 @@ const validateUserParams = celebrate({
   params: Joi.object().keys({
     userId: Joi
       .string()
+      .allow('me')
       .min(20)
       .max(24)
       .regex(/[a-z0-9]/),
@@ -29,11 +30,15 @@ const validateUserBody = celebrate({
       .regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
     email: Joi
       .string()
-      .required()
-      .email(),
+      .email()
+      .alter({
+        post: (schema) => schema.required(),
+      }),
     password: Joi
       .string()
-      .required(),
+      .alter({
+        post: (schema) => schema.required(),
+      }),
   }),
 })
 
