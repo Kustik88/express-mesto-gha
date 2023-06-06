@@ -5,14 +5,13 @@ const validateUserParams = celebrate({
   params: Joi.object().unknown().keys({
     userId: Joi
       .string()
-      .min(2)
       .max(24)
-      .pattern(/[a-z0-9]/),
+      .regex(/[a-z0-9]/),
   }),
 })
 
 const validateUserBody = celebrate({
-  body: Joi.object().keys({
+  body: Joi.object({
     name: Joi
       .string()
       .default('Жак-Ив Кусто')
@@ -26,22 +25,22 @@ const validateUserBody = celebrate({
     avatar: Joi
       .string()
       .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png')
-      .pattern(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
-  }),
-})
-
-const validateUserBodyForAuth = celebrate({
-  body: Joi.object().keys({
+      .regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
     email: Joi
       .string()
-      .required()
-      .email(),
+      .email()
+      .alter({
+        post: (body) => body.required(),
+      })
+      .tailor(['post']),
     password: Joi
       .string()
-      .required(),
+      .alter({
+        post: (body) => body.required(),
+      })
+      .tailor(['post']),
   }),
 })
-
 const validateCardBody = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
@@ -55,7 +54,6 @@ const validateCardBody = celebrate({
 
 module.exports = {
   validateUserParams,
-  validateUserBodyForAuth,
   validateUserBody,
   validateCardBody,
 }
