@@ -10,7 +10,7 @@ const validateUserParams = celebrate({
   }),
 })
 
-const validateUserBody = celebrate({
+const validateUserBodyForAuth = celebrate({
   body: Joi.object({
     name: Joi
       .string()
@@ -29,16 +29,28 @@ const validateUserBody = celebrate({
     email: Joi
       .string()
       .email()
-      .alter({
-        post: (body) => body.required(),
-      })
-      .tailor(['post']),
+      .required(),
     password: Joi
       .string()
-      .alter({
-        post: (body) => body.required(),
-      })
-      .tailor(['post']),
+      .required(),
+  }),
+})
+const validateUserBody = celebrate({
+  body: Joi.object({
+    name: Joi
+      .string()
+      .default('Жак-Ив Кусто')
+      .min(2)
+      .max(30),
+    about: Joi
+      .string()
+      .default('Исследователь')
+      .min(2)
+      .max(30),
+    avatar: Joi
+      .string()
+      .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png')
+      .regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
   }),
 })
 const validateCardBody = celebrate({
@@ -53,7 +65,8 @@ const validateCardBody = celebrate({
 })
 
 module.exports = {
-  validateUserParams,
   validateUserBody,
+  validateUserParams,
+  validateUserBodyForAuth,
   validateCardBody,
 }
