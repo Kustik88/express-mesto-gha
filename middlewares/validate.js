@@ -61,9 +61,21 @@ const validateCardBody = celebrate({
   }),
 })
 
+const validateCardBodyForPost = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().required().regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
+    owner: Joi.object().keys({
+      _id: Joi.string,
+    }),
+    likes: Joi.array().unique().items(Joi.string()),
+  }),
+})
+
 module.exports = {
   validateUserBody,
   validateUserParams,
   validateUserBodyForAuth,
   validateCardBody,
+  validateCardBodyForPost,
 }
