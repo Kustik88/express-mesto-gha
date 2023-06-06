@@ -6,7 +6,7 @@ const { validateCardBody, validateCardBodyForPost, validateCardParams } = requir
 router.use(auth)
 router.get('/cards', cardsControllers.getCards)
 router.post('/cards', validateCardBodyForPost, cardsControllers.createCard)
-router.delete('/cards/:cardId', validateCardBody, cardsControllers.deleteCard)
+router.delete('/cards/:cardId', validateCardParams, cardsControllers.deleteCard)
 router.put('/cards/:cardId/likes', validateCardParams, cardsControllers.likeCard)
 router.delete('/cards/:cardId/likes', validateCardParams, cardsControllers.dislikeCard)
 
