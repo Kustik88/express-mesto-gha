@@ -24,7 +24,9 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   cardModel
     .findByIdAndRemove(req.params.cardId)
-    .orFail(() => { throw new NotFoundError('Карточка c таким id не найден') })
+    .orFail(() => {
+      throw new NotFoundError('Карточка c таким id не найден')
+    })
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Вы не являетесь владельцем карточки')

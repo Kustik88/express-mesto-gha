@@ -9,7 +9,6 @@ const {
 const ExistingEmailError = require('../errors/ExistingEmailError')
 const BadRequestError = require('../errors/BadRequestError')
 const NotFoundError = require('../errors/NotFoundError')
-const ForbiddenError = require('../errors/ForbiddenError')
 
 const getUsers = (req, res, next) => {
   userModel.find({})
@@ -18,22 +17,14 @@ const getUsers = (req, res, next) => {
 }
 
 const getUserById = (req, res, next) => {
-  const { userId } = req.params
-  userModel
-    .findById(userId)
-    .orFail(() => {
-      throw new NotFoundError('Пользователь c таким id не найден')
-    })
-    .then((user) => res.status(OK).send(user))
-    .catch(next)
-}
-
-const getCurrentUser = (req, res, next) => {
-  if (req.params.id === 'me') {
-    req.params.id = req.user._id
+  let userId
+  if (req.params.userId === 'me') {
+    userId = req.user._id
+  } else {
+    userId = req.params.userId
   }
   userModel
-    .findById(req.params.id)
+    .findById(userId)
     .orFail(() => {
       throw new NotFoundError('Пользователь c таким id не найден')
     })
@@ -127,7 +118,6 @@ const loginUser = (req, res, next) => {
 
 module.exports = {
   getUsers,
-  getCurrentUser,
   getUserById,
   createUser,
   editUserInfo,
