@@ -33,14 +33,13 @@ const deleteCard = (req, res, next) => {
     .findByIdAndRemove(req.params.cardId)
     .orFail(() => { throw new NotFoundError('Карточка c таким id не найден') })
     .then((card) => {
-      if (card.owner.toString() !== req.body.user._id) {
+      if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Вы не являетесь владельцем карточки')
       }
       res.send(card)
     })
     .catch(next)
 }
-
 
 const likeCard = (req, res, next) => {
   cardModel.findByIdAndUpdate(
