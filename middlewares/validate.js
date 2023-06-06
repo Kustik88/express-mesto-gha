@@ -3,15 +3,7 @@ const { celebrate, Joi } = require('celebrate')
 
 const validateUserParams = celebrate({
   params: Joi.object().unknown().keys({
-    userId: Joi
-      .string()
-      .length(24)
-      .regex(/[a-z0-9]/)
-      .when(Joi.object({
-        userId: Joi.string().regex(/^\/users/).required(),
-      }).unknown(), {
-        then: Joi.string().regex(/^\/users\/(?!me).*$/).required(),
-      }),
+    userId: Joi.string().alphanum().required(),
   }),
 })
 
@@ -60,9 +52,9 @@ const validateUserBody = celebrate({
 })
 const validateCardBody = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required(),
-    owner: Joi.object().required().keys({
+    name: Joi.string().min(2).max(30),
+    link: Joi.string().regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
+    owner: Joi.object().keys({
       _id: Joi.string,
     }),
     likes: Joi.array().unique().items(Joi.string()),
