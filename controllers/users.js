@@ -38,7 +38,7 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body
   if (!password) {
-    return next(new BadRequestError('Поле "password" является обязательным'))
+    next(new BadRequestError('Поле "password" является обязательным'))
   }
   bcrypt.hash(password, 10)
     .then((hash) => {
