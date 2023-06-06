@@ -3,8 +3,13 @@ const { celebrate, Joi } = require('celebrate')
 const mongoose = require('mongoose')
 
 const validateUserParams = celebrate({
-  params: Joi.object().unknown().keys({
-    userId: Joi.string().alphanum().required(),
+  params: Joi.object().keys({
+    userId: Joi.string().custom((value, helpers) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        return helpers.message('Invalid user ID')
+      }
+      return value
+    }),
   }),
 })
 
@@ -51,16 +56,6 @@ const validateUserBody = celebrate({
       .regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
   }),
 })
-const validateCardBody = celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    link: Joi.string().regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
-    owner: Joi.object().keys({
-      _id: Joi.string,
-    }),
-    likes: Joi.array().unique().items(Joi.string()),
-  }),
-})
 
 const validateCardBodyForPost = celebrate({
   body: Joi.object().keys({
@@ -88,7 +83,6 @@ module.exports = {
   validateUserBody,
   validateUserParams,
   validateUserBodyForAuth,
-  validateCardBody,
   validateCardBodyForPost,
   validateCardParams,
 }

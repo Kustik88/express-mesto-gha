@@ -4,17 +4,11 @@ const userModel = require('../models/user')
 const {
   OK,
   CREATED,
-  BAD_REQUEST,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
 } = require('../constants/statusCodes')
 
 const ExistingEmailError = require('../errors/ExistingEmailError')
 const BadRequestError = require('../errors/BadRequestError')
 const NotFoundError = require('../errors/NotFoundError')
-const ForbiddenError = require('../errors/ForBiddenError')
-const UnauthorizedError = require('../errors/UnauthorizedError')
-// const { createError } = require('../helpers/createError')
 
 const getUsers = (req, res, next) => {
   userModel.find({})
