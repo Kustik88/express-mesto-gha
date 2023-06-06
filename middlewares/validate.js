@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-escape */
 const { celebrate, Joi } = require('celebrate')
+const mongoose = require('mongoose')
 
 const validateUserParams = celebrate({
   params: Joi.object().unknown().keys({
@@ -73,8 +74,13 @@ const validateCardBodyForPost = celebrate({
 })
 
 const validateCardParams = celebrate({
-  params: Joi.object().unknown().keys({
-    cardId: Joi.string().alphanum().required(),
+  params: Joi.object().keys({
+    cardId: Joi.string().custom((value, helpers) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        return helpers.message('Invalid card ID')
+      }
+      return value
+    }),
   }),
 })
 
