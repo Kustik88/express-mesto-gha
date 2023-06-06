@@ -5,8 +5,13 @@ const validateUserParams = celebrate({
   params: Joi.object().unknown().keys({
     userId: Joi
       .string()
-      .max(24)
-      .regex(/[a-z0-9]/),
+      .length(24)
+      .regex(/[a-z0-9]/)
+      .when(Joi.object({
+        userId: Joi.string().regex(/^\/users/).required(),
+      }).unknown(), {
+        then: Joi.string().regex(/^\/users\/(?!me).*$/).required(),
+      }),
   }),
 })
 
