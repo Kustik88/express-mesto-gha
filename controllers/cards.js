@@ -5,7 +5,7 @@ const {
 } = require('../constants/statusCodes')
 
 const NotFoundError = require('../errors/NotFoundError')
-const ForbiddenError = require('../errors/ForBiddenError')
+const ForbiddenError = require('../errors/ForbiddenError')
 
 const getCards = (req, res, next) => {
   cardModel.find({})

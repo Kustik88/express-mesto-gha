@@ -4,12 +4,15 @@ const mongoose = require('mongoose')
 
 const validateUserParams = celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().custom((value, helpers) => {
-      if (!mongoose.Types.ObjectId.isValid(value)) {
-        return helpers.message('Invalid user ID')
-      }
-      return value
-    }),
+    userId: Joi.alternatives().try(
+      Joi.string().custom((value, helpers) => {
+        if (!mongoose.Types.ObjectId.isValid(value)) {
+          return helpers.message('Invalid user ID')
+        }
+        return value
+      }),
+      Joi.string().valid('me'),
+    ),
   }),
 })
 

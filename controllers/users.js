@@ -9,6 +9,7 @@ const {
 const ExistingEmailError = require('../errors/ExistingEmailError')
 const BadRequestError = require('../errors/BadRequestError')
 const NotFoundError = require('../errors/NotFoundError')
+const ForbiddenError = require('../errors/ForbiddenError')
 
 const getUsers = (req, res, next) => {
   userModel.find({})
@@ -28,9 +29,11 @@ const getUserById = (req, res, next) => {
 }
 
 const getCurrentUser = (req, res, next) => {
-  const { userId } = req.user._id
+  if (req.params.id === 'me') {
+    req.params.id = req.user._id
+  }
   userModel
-    .findById(userId)
+    .findById(req.params.id)
     .orFail(() => {
       throw new NotFoundError('Пользователь c таким id не найден')
     })
