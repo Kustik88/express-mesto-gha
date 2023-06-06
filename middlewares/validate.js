@@ -72,10 +72,17 @@ const validateCardBodyForPost = celebrate({
   }),
 })
 
+const validateCardParams = celebrate({
+  params: Joi.object().unknown().keys({
+    cardId: Joi.string().alphanum().required(),
+  }),
+})
+
 module.exports = {
   validateUserBody,
   validateUserParams,
   validateUserBodyForAuth,
   validateCardBody,
   validateCardBodyForPost,
+  validateCardParams,
 }
