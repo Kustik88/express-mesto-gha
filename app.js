@@ -6,8 +6,8 @@ const { errors } = require('celebrate')
 const handlerError = require('./middlewares/handlerError')
 const routerUsers = require('./routes/users')
 const routerCards = require('./routes/cards')
+const { PORT, DB_ADDRESS } = require('./config')
 
-const { PORT, DB_ADDRESS } = process.env
 mongoose.connect(DB_ADDRESS)
 
 const app = express()

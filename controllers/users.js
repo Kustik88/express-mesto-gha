@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const userModel = require('../models/user')
+const JWT_SECRET = require('../config')
 const {
   OK,
   CREATED,
@@ -30,7 +31,6 @@ const getUserById = (req, res, next) => {
     .catch(next)
 }
 
-// eslint-disable-next-line consistent-return
 const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
@@ -102,7 +102,7 @@ const loginUser = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        'long-key-word',
+        JWT_SECRET,
         { expiresIn: '7d' },
       )
       res.send({ token })
