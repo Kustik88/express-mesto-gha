@@ -25,9 +25,7 @@ const getUserById = (req, res, next) => {
   }
   userModel
     .findById(userId)
-    .orFail(() => {
-      throw new NotFoundError('Пользователь c таким id не найден')
-    })
+    .orFail(() => next(new NotFoundError('Пользователь c таким id не найден')))
     .then((user) => res.status(OK).send(user))
     .catch(next)
 }
@@ -77,9 +75,7 @@ const editUserInfo = (req, res, next) => {
         runValidators: true,
       },
     )
-    .orFail(() => {
-      throw new NotFoundError('Пользователь c таким id не найден')
-    })
+    .orFail(() => next(new NotFoundError('Пользователь c таким id не найден')))
     .then((user) => res.status(OK).send(user))
     .catch(next)
 }
@@ -95,9 +91,7 @@ const editUserAvatar = (req, res, next) => {
         runValidators: true,
       },
     )
-    .orFail(() => {
-      throw new NotFoundError('Пользователь c таким id не найден')
-    })
+    .orFail(() => next(new NotFoundError('Пользователь c таким id не найден')))
     .then((user) => res.status(OK).send(user))
     .catch(next)
 }

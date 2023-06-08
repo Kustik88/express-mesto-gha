@@ -43,7 +43,7 @@ const likeCard = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(() => { throw new NotFoundError('Карточка c таким id не найден') })
+    .orFail(() => next(new NotFoundError('Карточка c таким id не найден')))
     .then((card) => res.status(CREATED).send(card))
     .catch(next)
 }
@@ -57,7 +57,7 @@ const dislikeCard = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(() => { throw new NotFoundError('Карточка c таким id не найден') })
+    .orFail(() => next(new NotFoundError('Карточка c таким id не найден')))
     .then((card) => res.status(OK).send(card))
     .catch(next)
 }
