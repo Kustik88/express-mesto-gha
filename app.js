@@ -7,7 +7,9 @@ const handlerError = require('./middlewares/handlerError')
 const routerUsers = require('./routes/users')
 const routerCards = require('./routes/cards')
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
+const { PORT, DB_ADDRESS } = process.env
+mongoose.connect(DB_ADDRESS)
+
 const app = express()
 app.use(bodyParser.json())
 app.use(helmet())
@@ -20,6 +22,6 @@ app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемая страница не найдена' })
 })
 
-app.listen(3000, () => {
-  console.log('Server is running')
+app.listen(PORT, () => {
+  console.log(`Sever is running on port ${PORT}`)
 })
