@@ -98,7 +98,7 @@ const editUserAvatar = (req, res, next) => {
 
 const loginUser = (req, res, next) => {
   const { email, password } = req.body
-  return userModel.findUserByCredentials(email, password)
+  return userModel.findUserByCredentials(email, password, next)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
