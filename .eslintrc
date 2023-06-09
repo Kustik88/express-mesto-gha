@@ -12,6 +12,7 @@
     "semi": [
       "error",
       "never"
-    ]
+    ],
+    "consistent-return": "off"
   }
 }

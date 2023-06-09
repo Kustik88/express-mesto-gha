@@ -36,7 +36,7 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body
   if (!password) {
-    next(new BadRequestError('Поле "password" является обязательным'))
+    return next(new BadRequestError('Поле "password" является обязательным'))
   }
   bcrypt.hash(password, 10)
     .then((hash) => {
@@ -56,7 +56,7 @@ const createUser = (req, res, next) => {
         }))
         .catch((err) => {
           if (err.code === 11000) {
-            next(new ExistingEmailError('Такой пользователь уже существует'))
+            return next(new ExistingEmailError('Такой пользователь уже существует'))
           }
           next(err)
         })
