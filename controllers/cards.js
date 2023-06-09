@@ -23,7 +23,7 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   cardModel
-    .findOne({_id: req.params.cardId})
+    .findOne({ _id: req.params.cardId })
     .then((card) => {
       if (!card) {
         return next(new NotFoundError('Карточка c таким id не найдена'))

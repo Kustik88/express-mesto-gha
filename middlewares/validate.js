@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-escape */
 const { celebrate, Joi } = require('celebrate')
 const mongoose = require('mongoose')
+const regexForLink = require('../constants/regex')
 
 const validateUserParams = celebrate({
   params: Joi.object().keys({
@@ -31,7 +32,7 @@ const validateUserBodyForAuth = celebrate({
     avatar: Joi
       .string()
       .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png')
-      .regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
+      .regex(regexForLink),
     email: Joi
       .string()
       .email()
@@ -56,14 +57,14 @@ const validateUserBody = celebrate({
     avatar: Joi
       .string()
       .default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png')
-      .regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
+      .regex(regexForLink),
   }),
 })
 
 const validateCardBodyForPost = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().required().regex(/^https?:\/\/(www.)?[a-z0-9-._~:\/?#\[\]@!$&'()*+,;=]+/),
+    link: Joi.string().required().regex(regexForLink),
     owner: Joi.object().keys({
       _id: Joi.string,
     }),
