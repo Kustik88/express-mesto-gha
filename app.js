@@ -8,15 +8,17 @@ const routerUsers = require('./routes/users')
 const routerCards = require('./routes/cards')
 const NotFoundError = require('./errors/NotFoundError')
 const { PORT, DB_ADDRESS } = require('./config')
+const { requestLogger, errorLogger } = require('./middlewares/logger')
 
 mongoose.connect(DB_ADDRESS)
 
 const app = express()
 app.use(bodyParser.json())
 app.use(helmet())
-
+app.use(requestLogger)
 app.use(routerUsers)
 app.use(routerCards)
+app.use(errorLogger)
 app.use((req, res, next) => {
   next(new NotFoundError('Запрашиваемая страница не найдена'))
 })
